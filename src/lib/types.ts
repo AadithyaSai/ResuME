@@ -1,4 +1,4 @@
-export interface Experience {
+export type Experience  = {
 	title?: string;
 	company?: string;
 	location?: string;
@@ -7,7 +7,7 @@ export interface Experience {
 	description?: string;
 }
 
-export interface Education {
+export type Education = {
 	degree?: string;
 	institution?: string;
 	location?: string;
@@ -16,31 +16,37 @@ export interface Education {
 	description?: string;
 }
 
-export interface Project {
-	title?: string;
+export type Project = {
+	name?: string;
 	link?: string;
 	srcLink?: string;
 	startDate?: string;
 	endDate?: string;
 	description?: string;
+	technologies?: string[];
 }
 
-export interface Certification {
-	title?: string;
+export type Certification = {
+	name?: string;
 	institution?: string;
 	link?: string;
 	date?: string;
 }
 
-export type ListableType = Project | Experience | Education | Certification;
+export type Skill = {
+	name?: string;
+	expertise?: string;
+}
 
-export interface ResumeData {
+export type ListableType = Project | Experience | Education | Certification | Skill;
+
+export type ResumeData = {
 	name?: string;
 	email?: string;
 	phone?: string;
 	address?: string;
 	summary?: string;
-	skills?: string[];
+	skills?: Skill[];
 	experiences?: Experience[];
 	educations?: Education[];
 	projects?: Project[];

@@ -1,5 +1,6 @@
-import { ResumeData, ListableType } from './types';
+import type { ListableType, ResumeData } from './types';
 
+// Convert markdown to LaTeX
 function markdownToTex(markdown: string): string {
 	// Match bold text
 	markdown = markdown.replace(/\*\*(.*?)\*\*/g, '\\textbf{$1}');
@@ -11,19 +12,42 @@ function markdownToTex(markdown: string): string {
 	return markdown;
 }
 
-function format(template: string, key: string, val: string | ListableType[]): string {
-	if (Array.isArray(val)) {
-		const innerTemplate = template.match(RegExp(`#${key}\\s*\\[(.*)\\]`, 's'));
-		if (!innerTemplate) {
-			return template;
-		}
-		let formatted = '';
-		for (const item of val) {
-			formatted += innerTemplate[1].replace(/#(\w+)/g, (match, p1) => {
-				return format(match, p1, item[p1 as keyof ListableType]);
-			});
-		}
-		return template.replace(innerTemplate[0], formatted);
+// Get next non-whitespace character
+function lookahead(str: string, offset: number, target: string): boolean {
+	let i = offset;
+	while (/\s/.test(str[i])) {
+		i++;
 	}
-	return template.replaceAll(`#${key}`, markdownToTex(val));
+	return str[i] === target;
+}
+
+// Implement a simple templating engine
+function formatTex(template: string, data: ResumeData) {
+	const stack = [data];
+	let level = 0;
+	let output = '';
+	let key = '';
+	let i = 0;
+
+	while (i < template.length) {
+		const char = template[i];
+		const next = template[i + 1];
+
+		if (char === '{' && next === '{') {
+			level++;
+			i += 2;
+			key = '';
+		} else if (char === '}' && next === '}') {
+			level--;
+			i += 2;
+			const value = key.split('.').reduce((acc, key) => acc[key], stack[level]);
+			output += value;
+		} else if (level > 0) {
+			key += char;
+			i++;
+		} else {
+			output += char;
+			i++;
+		}
+	}
 }
